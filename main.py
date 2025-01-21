@@ -49,6 +49,11 @@ class Player(Sprite):
             if self.rect.y > 0:
                 self.rect.y -= self.speed
 
+class Enemy(Sprite):
+    def __init__(self, x, y, w, h, image, speed):
+        super().__init__(x, y, w, h, image)
+        self.speed = speed
+
 
 player = Player(0, 400, 50, 50, pygame.image.load("sprite1.png"), 5)
 
@@ -73,8 +78,12 @@ for row in lvl1:
     y += block_size
 
 font = pygame.font.SysFont("Arial", 80)
+font1 = pygame.font.SysFont("Arial", 30)
 lose = font.render("You Lose!", True, (0, 0, 250))
 win = font.render("You Win!", True, (150, 100, 200))
+lose1 = font1.render("Press SPACE to play again", True, (255, 255, 102))
+win1 = font1.render("Press SPACE to play again", True, (255, 255, 102))
+
 
 finish = False
 print(len(blocks))
@@ -95,12 +104,14 @@ while game:
 
         for b in blocks:
             if player.rect.colliderect(b.rect):
-                window.blit(lose, (215, 190))
+                window.blit(lose, (215, 120))
+                window.blit(lose1, (215, 200))
                 finish = True
 
 
             if player.rect.colliderect(treasure):
-                window.blit(win, (215, 190))
+                window.blit(win, (215, 120))
+                window.blit(win1, (215, 200))
                 finish = True
 
 
@@ -111,6 +122,9 @@ while game:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             player = Player(0, 400, 50, 50, pygame.image.load("sprite1.png"), 5)
             finish = False
+
+    pygame.display.update()
+    clock.tick(FPS)
 
     pygame.display.update()
     clock.tick(FPS)
