@@ -50,11 +50,59 @@ class Player(Sprite):
                 self.rect.y -= self.speed
 
 class Enemy(Sprite):
-    def __init__(self, x, y, w, h, image, speed):
-        super().__init__(x, y, w, h, image)
+    def __init__(self, x, y, w, h, image1, image2, speed, x2, direction = "right"):
+        super().__init__(x, y, w, h, image1)
+        self.image_right = self.image
+        self.image_left = pygame.transform.scale(image2, (w, h))
         self.speed = speed
+        self.x1 = x
+        self.x2 = x2
+        self.direction = direction
 
+    def move(self):
+        if self.rect.x >= self.x2:
+            self.rect.x = self.x2
+            self.direction = "left"
+            self.image = self.image_left
+        elif self.rect.x <= self.x1:
+            self.rect.x = self.x1
+            self.direction = "right"
+            self.image = self.image_right
+        if self.direction == "right":
+            self.rect.x += self.speed
+        else:
+            self.rect.x -= self.speed
 
+class Enemy1(Sprite):
+    def __init__(self, x, y, w, h, image1, image2, speed, x2, direction = "left"):
+        super().__init__(x, y, w, h, image2)
+        self.image_left = self.image
+        self.image_right = pygame.transform.scale(image1, (w, h))
+        self.speed = speed
+        self.x1 = x
+        self.x2 = x2
+        self.direction = direction
+
+    def move(self):
+        if self.rect.x <= self.x2:
+            self.rect.x = self.x2
+            self.direction = "right"
+            self.image = self.image_right
+        elif self.rect.x >= self.x1:
+            self.rect.x = self.x1
+            self.direction = "left"
+            self.image = self.image_left
+        if self.direction == "left":
+            self.rect.x -= self.speed
+        else:
+            self.rect.x += self.speed
+
+enem_img1 = pygame.image.load("cyborg.png")
+enem_img2 = pygame.transform.flip(enem_img1, True, False)
+enemy_img1 =  pygame.image.load("cyborg.png")
+enemy_img2 = pygame.transform.flip(enem_img1, True, False)
+enemy = Enemy(423, 350, 50, 50, enem_img1, enem_img2, 5, 628)
+enemy1 = Enemy1(626, 450, 50, 50, enemy_img1, enemy_img2, 5, 124)
 player = Player(0, 400, 50, 50, pygame.image.load("sprite1.png"), 5)
 
 blocks = []
@@ -100,10 +148,25 @@ while game:
         player.draw()
         player.move(pygame.K_a, pygame.K_d, pygame.K_s, pygame.K_w)
 
+        enemy.draw()
+        enemy.move()
+        enemy1.draw()
+        enemy1.move()
+
     
 
         for b in blocks:
             if player.rect.colliderect(b.rect):
+                window.blit(lose, (215, 120))
+                window.blit(lose1, (215, 200))
+                finish = True
+
+            if player.rect.colliderect(enemy):
+                window.blit(lose, (215, 120))
+                window.blit(lose1, (215, 200))
+                finish = True
+
+            if player.rect.colliderect(enemy1):
                 window.blit(lose, (215, 120))
                 window.blit(lose1, (215, 200))
                 finish = True
@@ -122,9 +185,6 @@ while game:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             player = Player(0, 400, 50, 50, pygame.image.load("sprite1.png"), 5)
             finish = False
-
-    pygame.display.update()
-    clock.tick(FPS)
 
     pygame.display.update()
     clock.tick(FPS)
